@@ -1,6 +1,6 @@
 {
     "name": "use-css-transition",
-    "version": "0.0.0-semantic-release",
+    "version": "v1.0.0",
     "description": "A react hook for applying CSS transitions to multiple elements.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
