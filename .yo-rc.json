@@ -1,0 +1,10 @@
+{
+    "@jwalton/generator-typescript": {
+        "promptValues": {
+            "authorName": "Jason Walton",
+            "authorEmail": "dev@lucid.thedreaming.org",
+            "authorUrl": "https://www.thedreaming.org",
+            "minNodeVersion": "12"
+        }
+    }
+}
