@@ -2,30 +2,31 @@ import { Config, ItemState, TransitionItem } from './types';
 
 const IMMEDIATE_UPDATE = 0;
 
-export interface State<T> {
-    items: TransitionItem<T>[];
-    byKey: { [key: string]: TransitionItem<T> };
+export interface State<T, P = React.CSSProperties> {
+    items: TransitionItem<T, P>[];
+    byKey: { [key: string]: TransitionItem<T, P> };
     nextUpdate: number | undefined;
 }
 
-function getStyle<T>(
+function getStyle<T, P = React.CSSProperties>(
     item: T,
     index: number,
-    style: React.CSSProperties | ((item: T, index: number) => React.CSSProperties),
-    common: React.CSSProperties | ((item: T, index: number) => React.CSSProperties) | undefined
-): React.CSSProperties {
-    const commonStyle: React.CSSProperties | undefined = common
+    style: P | ((item: T, index: number) => P),
+    common: P | ((item: T, index: number) => P) | undefined
+): P {
+    const commonStyle: P | undefined = common
         ? getStyle(item, index, common, undefined)
         : undefined;
 
     if (typeof style === 'function') {
+        const styleFn = style as (item: T, index: number) => P;
         if (commonStyle) {
             return {
                 ...commonStyle,
-                ...style(item, index),
+                ...styleFn(item, index),
             };
         } else {
-            return style(item, index);
+            return styleFn(item, index);
         }
     } else {
         if (commonStyle) {
@@ -39,19 +40,19 @@ function getStyle<T>(
     }
 }
 
-export function generateInitialState<T>(
+export function generateInitialState<T, P = React.CSSProperties>(
     items: T[],
     getKey: (item: T) => string,
-    config: Config<T>
-): State<T> {
-    const result: State<T> = { items: [], byKey: {}, nextUpdate: undefined };
+    config: Config<T, P>
+): State<T, P> {
+    const result: State<T, P> = { items: [], byKey: {}, nextUpdate: undefined };
 
     const styler = config.initial || config.from;
     const nextUpdate = (result.nextUpdate =
         config.initial || items.length === 0 ? undefined : IMMEDIATE_UPDATE);
     const state = config.initial ? 'update' : 'from';
     items.forEach((item, index) => {
-        const resultItem: TransitionItem<T> = {
+        const resultItem: TransitionItem<T, P> = {
             item,
             style: getStyle(item, index, styler, config.common),
             key: getKey(item),
@@ -66,15 +67,15 @@ export function generateInitialState<T>(
     return result;
 }
 
-export function generateNextState<T>(
-    prev: State<T>,
+export function generateNextState<T, P = React.CSSProperties>(
+    prev: State<T, P>,
     items: T[],
     getKey: (item: T) => string,
-    config: Config<T>
-): State<T> {
-    const result: State<T> = { items: [], byKey: {}, nextUpdate: undefined };
+    config: Config<T, P>
+): State<T, P> {
+    const result: State<T, P> = { items: [], byKey: {}, nextUpdate: undefined };
 
-    function addItem(resultItem: TransitionItem<T>) {
+    function addItem(resultItem: TransitionItem<T, P>) {
         result.items.push(resultItem);
         result.byKey[resultItem.key] = resultItem;
 
@@ -91,7 +92,7 @@ export function generateNextState<T>(
     // First iterate over the items that were passed to us...
     items.forEach((item, index) => {
         const key = getKey(item);
-        let style: React.CSSProperties;
+        let style: P;
         let state: ItemState;
         let nextUpdate: number | undefined;
 

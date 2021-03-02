@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import useCssTransition from '..';
+import { useCSSTransition } from '..';
 
 export function AnimatedList() {
     const [list, setList] = useState(['foo', 'bar', 'baz']);
 
-    const transitions = useCssTransition(list, (item) => item, {
+    const transitions = useCSSTransition(list, (item) => item, {
         common: {
             willChange: 'opacity',
             transition: 'opacity 1s',
