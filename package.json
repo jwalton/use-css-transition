@@ -12,6 +12,7 @@
         "build": "tsc",
         "clean": "rm -rf dist types coverage",
         "test:unittest": "tsc -p test && jest",
+        "test:coverage": "tsc -p test && jest --coverage",
         "lint": "npm run lint:source && npm run lint:tests",
         "lint:source": "eslint --ext .ts --ext .tsx src",
         "lint:tests": "eslint --ext .ts --ext .tsx test",
@@ -49,6 +50,7 @@
     "homepage": "https://github.com/jwalton/use-css-transition#readme",
     "devDependencies": {
         "@types/chai": "^4.2.15",
+        "@types/jest": "^26.0.20",
         "@types/node": "^12.0.0",
         "@types/react": "^17.0.2",
         "@types/react-dom": "^17.0.1",

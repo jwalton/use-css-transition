@@ -90,6 +90,95 @@ describe('State Tests', function () {
                 ])
             );
         });
+
+        it('should generate style from a function', () => {
+            const config: Config<string> = {
+                ...DEFAULT_CONFIG,
+                from: (_item: string, index: number) => {
+                    return {
+                        width: index,
+                    };
+                },
+            };
+            const state = generateInitialState<string>(['a', 'b'], (k) => k, config);
+            expect(state).to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: { width: 0 },
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
+                        style: { width: 1 },
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 1,
+                    },
+                ])
+            );
+        });
+
+        it('should add common style to style genereated from a function', () => {
+            const config: Config<string> = {
+                ...DEFAULT_CONFIG,
+                common: {
+                    height: 10,
+                },
+                from: (_item: string, index: number) => {
+                    return {
+                        width: index,
+                    };
+                },
+            };
+            const state = generateInitialState<string>(['a', 'b'], (k) => k, config);
+            expect(state).to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: { height: 10, width: 0 },
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
+                        style: { height: 10, width: 1 },
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 1,
+                    },
+                ])
+            );
+        });
+
+        it('should apply common style', () => {
+            const config: Config<string> = {
+                ...DEFAULT_CONFIG,
+                common: {
+                    height: 10,
+                },
+            };
+            const state = generateInitialState<string>(['a'], (k) => k, config);
+            expect(state).to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: { height: 10, ...FROM },
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 0,
+                    },
+                ])
+            );
+        });
     });
 
     describe('generateNextState', () => {
@@ -214,27 +303,107 @@ describe('State Tests', function () {
             );
         });
 
-        it('should keep items that are leaving in the set', () => {
-            const firstState = generateInitialState<string>(['test'], (k) => k, DEFAULT_CONFIG);
+        it('should add new items, in the correct position', () => {
+            const firstState = generateInitialState<string>(['a', 'c'], (k) => k, DEFAULT_CONFIG);
+            const secondState = generateNextState(firstState, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
+            clock.tick(DEFAULT_CONFIG.enterTime + DEFAULT_CONFIG.leaveTime);
 
-            const leaveState = generateNextState(firstState, [], (k) => k, DEFAULT_CONFIG);
+            const addState = generateNextState(
+                secondState,
+                ['a', 'b', 'c'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+            expect(addState, 'addState').to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: ENTER,
+                        state: 'update',
+                        nextUpdate: undefined,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
+                        style: FROM,
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 1,
+                    },
+                    {
+                        item: 'c',
+                        key: 'c',
+                        style: ENTER,
+                        state: 'update',
+                        nextUpdate: undefined,
+                        index: 2,
+                    },
+                ])
+            );
+        });
+
+        it('should keep items that are leaving in the set, in the same position in the array', () => {
+            const firstState = generateInitialState<string>(
+                ['a', 'b', 'c'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+
+            const leaveState = generateNextState(firstState, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
             expect(leaveState, 'leaveState').to.eql(
                 itemsToState([
                     {
-                        item: 'test',
-                        key: 'test',
+                        item: 'a',
+                        key: 'a',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
                         style: LEAVE,
                         state: 'leave',
                         nextUpdate: NOW + DEFAULT_CONFIG.leaveTime,
-                        index: 0,
+                        index: 1,
+                    },
+                    {
+                        item: 'c',
+                        key: 'c',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 1,
                     },
                 ])
             );
 
             clock.tick(DEFAULT_CONFIG.leaveTime);
 
-            const leftState = generateNextState(leaveState, [], (k) => k, DEFAULT_CONFIG);
-            expect(leftState, 'leftState').to.eql(itemsToState([]));
+            const leftState = generateNextState(leaveState, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
+            expect(leftState, 'leftState').to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: ENTER,
+                        state: 'update',
+                        nextUpdate: undefined,
+                        index: 0,
+                    },
+                    {
+                        item: 'c',
+                        key: 'c',
+                        style: ENTER,
+                        state: 'update',
+                        nextUpdate: undefined,
+                        index: 1,
+                    },
+                ])
+            );
         });
 
         it('should recycle indexes for leaving items', () => {
@@ -244,20 +413,20 @@ describe('State Tests', function () {
             expect(nextState).to.eql(
                 itemsToState([
                     {
-                        item: 'test2',
-                        key: 'test2',
-                        style: FROM,
-                        state: 'from',
-                        nextUpdate: 0,
-                        index: 0,
-                    },
-                    {
                         item: 'test',
                         key: 'test',
                         style: LEAVE,
                         state: 'leave',
                         nextUpdate: NOW + DEFAULT_CONFIG.leaveTime,
                         index: 0, // Should still be index 0, even though there's a new index 0.
+                    },
+                    {
+                        item: 'test2',
+                        key: 'test2',
+                        style: FROM,
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 0,
                     },
                 ])
             );
@@ -339,6 +508,108 @@ describe('State Tests', function () {
                         state: 'update',
                         nextUpdate: undefined,
                         index: 1, // Index should change.
+                    },
+                ])
+            );
+        });
+
+        it('should add and remove an item in the same position, at the same time', () => {
+            const firstState = generateInitialState<string>(
+                ['a', 'b', 'c'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+
+            const leaveState = generateNextState(
+                firstState,
+                ['a', 'd', 'c'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+            expect(leaveState, 'leaveState').to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
+                        style: LEAVE,
+                        state: 'leave',
+                        nextUpdate: NOW + DEFAULT_CONFIG.leaveTime,
+                        index: 1,
+                    },
+                    {
+                        item: 'd',
+                        key: 'd',
+                        style: FROM,
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 1,
+                    },
+                    {
+                        item: 'c',
+                        key: 'c',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 2,
+                    },
+                ])
+            );
+        });
+
+        it('should keep track of an item which has moved', () => {
+            const firstState = generateInitialState<string>(
+                ['a', 'b', 'c', 'd'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+
+            const leaveState = generateNextState(
+                firstState,
+                ['a', 'c', 'b', 'd'],
+                (k) => k,
+                DEFAULT_CONFIG
+            );
+            expect(leaveState, 'leaveState').to.eql(
+                itemsToState([
+                    {
+                        item: 'a',
+                        key: 'a',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 0,
+                    },
+                    {
+                        item: 'b',
+                        key: 'b',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 2,
+                    },
+                    {
+                        item: 'c',
+                        key: 'c',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 1,
+                    },
+                    {
+                        item: 'd',
+                        key: 'd',
+                        style: ENTER,
+                        state: 'enter',
+                        nextUpdate: NOW + DEFAULT_CONFIG.enterTime,
+                        index: 3,
                     },
                 ])
             );
