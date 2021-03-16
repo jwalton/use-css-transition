@@ -144,7 +144,10 @@ export function generateNextState<T, P = React.CSSProperties>(
                 style: getStyle(prevItem.item, prevItem.index, config.leave, config.common),
                 nextUpdate: Date.now() + config.leaveTime,
             });
-        } else if (prevItem.nextUpdate === undefined || prevItem.nextUpdate <= Date.now()) {
+        } else if (prevItem.nextUpdate !== undefined && prevItem.nextUpdate > Date.now()) {
+            // Keep the leaving item - it hasn't finished leaving yet.
+            addItem(prevItem);
+        } else {
             // Item has left.
         }
     }

@@ -381,9 +381,15 @@ describe('State Tests', function () {
                 ])
             );
 
-            clock.tick(DEFAULT_CONFIG.leaveTime);
+            clock.tick(10);
 
-            const leftState = generateNextState(leaveState, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
+            // Since clock hasn't ticked far enough yet, item hasn't left, so nothing should update.
+            const leaveState2 = generateNextState(leaveState, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
+            expect(leaveState2, 'leaveState2').to.eql(leaveState);
+
+            clock.tick(DEFAULT_CONFIG.leaveTime - 10);
+
+            const leftState = generateNextState(leaveState2, ['a', 'c'], (k) => k, DEFAULT_CONFIG);
             expect(leftState, 'leftState').to.eql(
                 itemsToState([
                     {
