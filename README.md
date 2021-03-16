@@ -46,6 +46,12 @@ function AnimatedList() {
 }
 ```
 
+## Examples
+
+Masonry Layout: ([edit on codesandbox](https://codesandbox.io/s/usecsstransition-masonry-grid-f3obx?file=/src/index.js))
+
+[![Masonry Example](docs/masonry.gif)](https://codesandbox.io/s/usecsstransition-masonry-grid-f3obx?file=/src/index.js)
+
 ## API
 
 ### useCSSTransition(array, getKey, config)
@@ -66,7 +72,7 @@ instead of just CSS properties. This is most useful when you want to construct
 two different styles for related objects (like you want to scale and position
 and image, and want to position but not scale text over top of the image).
 
-ØThis does _not_ do any kind of interpolation - you have to take care of that
+This does _not_ do any kind of interpolation - you have to take care of that
 part yourself (or let your browser's CSS engine take care of it, ideally).
 
 Copyright 2021 Jason Walton
