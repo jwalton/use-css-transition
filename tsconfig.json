@@ -3,7 +3,7 @@
         /* Basic Options */
         "target": "es2018",
         "module": "commonjs",
-        "lib": ["es2018"],
+        "lib": ["es2018", "DOM"],
         "allowJs": false,
         // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
         "declaration": true,
