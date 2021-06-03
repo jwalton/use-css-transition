@@ -5,7 +5,7 @@ export function useForceUpdate(): () => void {
 
     let defer: (fn: () => void) => void;
 
-    if (typeof window !== undefined) {
+    if (typeof window !== 'undefined') {
         defer = window.requestAnimationFrame;
     } else {
         defer = (fn: () => void) => setTimeout(fn, 1);
