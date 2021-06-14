@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { generateInitialState, generateNextState, State } from './state';
 import { Config, TransitionItem } from './types';
-import { useForceUpdate } from './useForceUpdate';
+import useForceUpdate from './useForceUpdate';
 
 export * from './types';
 

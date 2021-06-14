@@ -1,7 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-export function useForceUpdate(): () => void {
+/**
+ * Returns a function which can be called to force the parent component to update.
+ */
+export default function useForceUpdate(): () => void {
     const [, setCount] = useState(0);
+    const updating = useRef(false);
 
     let defer: (fn: () => void) => void;
 
@@ -12,7 +16,14 @@ export function useForceUpdate(): () => void {
     }
 
     return useCallback(() => {
+        if (updating.current) {
+            // Already updating.
+            return;
+        }
+        updating.current = true;
+
         defer(() => {
+            updating.current = false;
             setCount((count) => {
                 if (count === Number.MAX_SAFE_INTEGER) {
                     return 0;
@@ -21,5 +32,5 @@ export function useForceUpdate(): () => void {
                 }
             });
         });
-    }, []);
+    }, [defer]);
 }
