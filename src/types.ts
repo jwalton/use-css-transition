@@ -14,7 +14,7 @@ export type ItemState = 'from' | 'enter' | 'update' | 'leave';
 export interface TransitionItem<T, P = React.CSSProperties> {
     item: T;
     style: P;
-    key: string;
+    key: string | number;
     state: ItemState;
     nextUpdate?: number;
     index: number;

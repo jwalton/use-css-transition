@@ -179,6 +179,23 @@ describe('State Tests', function () {
                 ])
             );
         });
+
+        it('should work for numeric keys', () => {
+            const state = generateInitialState<string>(['test'], () => 1, DEFAULT_CONFIG);
+
+            expect(state).to.eql(
+                itemsToState([
+                    {
+                        item: 'test',
+                        key: 1,
+                        style: FROM,
+                        state: 'from',
+                        nextUpdate: 0,
+                        index: 0,
+                    },
+                ])
+            );
+        });
     });
 
     describe('generateNextState', () => {

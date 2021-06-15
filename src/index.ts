@@ -24,8 +24,8 @@ const IMMEDIATE_UPDATE = 0;
  *   "transition" and "will-change".
  */
 export function useCSSTransition<T>(
-    items: T[],
-    getKey: (item: T) => string,
+    items: readonly T[],
+    getKey: (item: T) => string | number,
     config: Config<T>
 ): TransitionItem<T>[] {
     return useTransition(items, getKey, config);
@@ -56,8 +56,8 @@ export function useCSSTransition<T>(
  *   "transition" and "will-change".
  */
 export function useTransition<T, P>(
-    items: T[],
-    getKey: (item: T) => string,
+    items: readonly T[],
+    getKey: (item: T) => string | number,
     config: Config<T, P>
 ): TransitionItem<T, P>[] {
     const forceUpdate = useForceUpdate();

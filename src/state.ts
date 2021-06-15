@@ -41,8 +41,8 @@ function getStyle<T, P = React.CSSProperties>(
 }
 
 export function generateInitialState<T, P = React.CSSProperties>(
-    items: T[],
-    getKey: (item: T) => string,
+    items: readonly T[],
+    getKey: (item: T) => string | number,
     config: Config<T, P>
 ): State<T, P> {
     const result: State<T, P> = { items: [], byKey: {}, nextUpdate: undefined };
@@ -69,8 +69,8 @@ export function generateInitialState<T, P = React.CSSProperties>(
 
 export function generateNextState<T, P = React.CSSProperties>(
     prev: State<T, P>,
-    items: T[],
-    getKey: (item: T) => string,
+    items: readonly T[],
+    getKey: (item: T) => string | number,
     config: Config<T, P>
 ): State<T, P> {
     const result: State<T, P> = { items: [], byKey: {}, nextUpdate: undefined };
@@ -90,7 +90,7 @@ export function generateNextState<T, P = React.CSSProperties>(
         }
     }
 
-    function newItem(item: T, key: string) {
+    function newItem(item: T, key: string | number) {
         const index = nextIndex++;
         addItem({
             item,
@@ -152,7 +152,7 @@ export function generateNextState<T, P = React.CSSProperties>(
         }
     }
 
-    const newByKey: { [key: string]: { item: T; key: string } } = {};
+    const newByKey: { [key: string]: { item: T; key: string | number } } = {};
     for (const item of items) {
         const key = getKey(item);
         newByKey[key] = { item, key };
