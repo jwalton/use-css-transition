@@ -1,4 +1,4 @@
-import { Config, ItemState, TransitionItem } from './types';
+import { Config, ItemState, TransitionItem } from './types.js';
 
 const IMMEDIATE_UPDATE = 0;
 

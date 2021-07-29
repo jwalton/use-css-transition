@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { generateInitialState, generateNextState, State } from './state';
-import { Config, TransitionItem } from './types';
-import useForceUpdate from './useForceUpdate';
+import { generateInitialState, generateNextState, State } from './state.js';
+import { Config, TransitionItem } from './types.js';
+import useForceUpdate from './useForceUpdate.js';
 
-export * from './types';
+export * from './types.js';
 
 const IMMEDIATE_UPDATE = 0;
 
