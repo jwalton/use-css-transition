@@ -2,6 +2,7 @@
 
 [![NPM version](https://badge.fury.io/js/use-css-transition.svg)](https://npmjs.org/package/use-css-transition)
 ![Build Status](https://github.com/jwalton/use-css-transition/workflows/GitHub%20CI/badge.svg)
+[![Minzipped size](https://img.shields.io/bundlephobia/minzip/use-css-transition.svg)](https://bundlephobia.com/result?p=use-css-transition)
 
 ## Installation
 
