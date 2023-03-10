@@ -178,7 +178,7 @@ export function generateNextState<T, P = React.CSSProperties>(
             keepItem(prevItem, item);
             prevIndex++;
             index++;
-        } else if (!newByKey[prevItem.key]) {
+        } else if (prevItem && !newByKey[prevItem.key]) {
             // Prev item is leaving.
             leaveItem(prevItem);
             prevIndex++;
