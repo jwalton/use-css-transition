@@ -12,7 +12,7 @@ npm install use-css-transition
 
 ## Usage
 
-`useCssTransition` is sort of like a [CSS transition group](http://reactcommunity.org/react-transition-group/transition-group/), but with the API Of [`react-spring`'s useTransition() hook](https://www.react-spring.io/docs/hooks/use-transition).
+`useCssTransition` is sort of like a [CSS transition group](http://reactcommunity.org/react-transition-group/transition-group/), but with the API Of [`react-spring`'s useTransition() hook](https://www.react-spring.dev/docs/components/use-transition).
 
 Here's a quick example:
 
