@@ -18,11 +18,11 @@ export function AnimatedList() {
 
     return (
         <div>
-            {transitions.map(({ item, style, key }) => {
+            {transitions.map(({ item, style, key }) => (
                 <div key={key} style={style}>
                     {item}
                 </div>;
-            })}
+            ))}
         </div>
     );
 }
